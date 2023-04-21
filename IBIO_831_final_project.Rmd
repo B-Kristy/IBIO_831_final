@@ -6,24 +6,68 @@ date: "2023-04-20"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+setwd("~/Documents/GitHub/IBIO_831_final/")
+
+# Load Libraries
+
+
 ```
 
-## R Markdown
-## Morgan 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## How does microbial diversity influence ectoparasite load in painted turtles? 
+[Placeholder intro]
+[Experimental Design]
+[Hypotheses]
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r DATA SIMULATION, include=FALSE}
 
-```{r cars}
-summary(cars)
+
+
+
 ```
 
-## Including Plots
+```{r DATA TRANSFORMATIONS}
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r MODEL BUILD}
+# NULL MODEL
+
+# ecto ~ diversity
+
+# ecto ~ body size 
+
+# ecto ~ diversity + body size 
+
+# ecto ~ diversity * body size
+
+```
+
+```{r MODEL COMPARISON}
+# AIC MODEL COMPARISON
+
+
+
+```
+
+```{r MODEL EVALUATION, echo=FALSE}
+# plot residuals of best-fit model here:
+
+
+```
+[Paragraph to discuss model testing and best-fit model]
+
+```{r RESULTS - RAW DATA WITH MODEL PREDICTIONS, echo=FALSE}
+
+
+
+
+```
+
+```{r PREPARE EFFECT SIZES }
+
+
+
+```
+[ Placeholder to discuss results - using effect sizes]
