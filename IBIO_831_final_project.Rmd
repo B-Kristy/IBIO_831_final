@@ -7,27 +7,63 @@ date: "2023-04-20"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 rm(list=ls())
-setwd("~/Documents/GitHub/IBIO_831_final/")
+setwd("~/Documents/GitHub/IBIO_831_final")
 
 # Load Libraries
-
+library(bbmle)
+library(truncnorm)
+library(tidyverse)
 
 ```
 
 ## How does microbial diversity influence ectoparasite load in painted turtles? 
+Morgan Clark and Brandon Kristy 
 
-Intro 
+#Introduction
 
 Painted turtles (Chrysemys picta) are a common freshwater turtle species 
 in North America. As they inhabit rivers, lakes, and ponds they are often subject to aquatic 
-ectoparasites, such as leeches, which serve as vectors for more harmful blood parasites. Recently there has been an uptick in research investigating the microbiome of painted turtles, focusing largely on quantifying bacterial phyla present in the gut. However, little is known about how the microbial diversity in these organisms may influence fitness, or how they interact with stressors in their environment, such as ectoparasites. In this study, we survey three populations of painted turtles, quantifying ectoparasite load, fecal microbiota diversity, and body size for three hundred individuals in order to determine if gut microbial diversity mediates susceptibility to ectoparasites. We predicted that turtles with higher gut microbial diversity would be less susceptible to ectoparasite predation, and consequently would have fewer attached leeches. 
+ectoparasites, such as leeches, which serve as vectors for more harmful blood parasites. Recently there has been an uptick in research investigating the microbiome of painted turtles, focusing largely on quantifying bacterial phyla present in the gut. However, little is known about how the microbial diversity in these organisms may influence fitness, or how they interact with stressors in their environment, such as ectoparasites. In this study, we survey three populations of painted turtles, quantifying ectoparasite load and fecal microbiota diversity in to determine if gut microbial diversity mediates susceptibility to ectoparasites. We predicted that turtles with higher gut microbial diversity would be less susceptible to ectoparasite predation, and consequently would have fewer attached leeches. 
 
 
 ```{r DATA SIMULATION, include=FALSE}
+set.seed(123)
+# Define the number of groups and the number of indviduals sampled within each group
+n.groups <- 3
+n.sample <- 100
+
+n <- 300
+
+# Create a numerical indicator describing the region where each individual was recovered
+x <- gl(n = n.groups, k = n.sample, length = n)
+site <- factor(x, labels = c("Site1", "Site2", "Site3")) 
+
+# Microbial Diversity
+microbe_div <- runif(n, 60, 177)
+microbe_div.scaled <- scale(microbe_div, center=TRUE, scale = TRUE)
+
+# Build the design matrix. Put the site-specific effects
+# first, followed by turtle size and microbe diversity effects, followed by their interactions. 
+X.mat <-  model.matrix(~ site * microbe_div.scaled)
+print(X.mat, dig = 2)  
+
+# Select the parameter values for each of the parameters that you defined
+beta.vec <- c(4.24, 2.23, -1.34, -1.5, -2.8, -0.9)
 
 
+# Here's the recipe for assembling the parasite counts in three steps: 
+# 1. Add up all components of the linear model to get the linear predictor, which is the #    expected parasite count on a (natural) log scale
+#    Obtain the value of the linear predictor by matrix multiplication of the 
+#    design matrix (Xmat) and the parameter vector (beta.vec).  
 
+lin.pred <- X.mat %*% beta.vec
 
+# 3. Generate the data from a Poisson distribution with linear predictor as the mean.
+ecto.load <- rnorm(n =n, mean = lin.pred)
+
+# Package the data ecto.load, site, and microbial diversity into
+# a data frame.
+dat <- data.frame(ecto.load, site, microbe_div, microbe_div.scaled)
 ```
 
 ```{r DATA TRANSFORMATIONS}
@@ -37,20 +73,26 @@ ectoparasites, such as leeches, which serve as vectors for more harmful blood pa
 
 ```{r MODEL BUILD}
 # NULL MODEL
+m1 <- lm(ecto.load ~ 1, data = dat)
 
 # ecto ~ diversity
+m2 <- lm(ecto.load ~ microbe_div, data = dat)
 
-# ecto ~ body size 
+# ecto ~ site 
+m3 <- lm(ecto.load ~ site, data = dat)
 
-# ecto ~ diversity + body size 
+# ecto ~ diversity + site
+m4 <- lm(ecto.load ~ microbe_div + site, data =dat)
 
-# ecto ~ diversity * body size
-
+# ecto ~ diversity * site
+m5 <- lm(ecto.load ~ microbe_div.scaled * site, data = dat)
 ```
 
 ```{r MODEL COMPARISON}
 # AIC MODEL COMPARISON
-
+tab = AICctab(m1, m2, m3, m4, m5, base=TRUE, delta=TRUE, weights=TRUE, logLik=TRUE)
+tab
+class(tab) <- 'data.frame'
 
 
 ```
@@ -63,8 +105,8 @@ ectoparasites, such as leeches, which serve as vectors for more harmful blood pa
 [Paragraph to discuss model testing and best-fit model]
 
 ```{r RESULTS - RAW DATA WITH MODEL PREDICTIONS, echo=FALSE}
-
-
+plot(predict(m2), resid(m2))
+lines(lowess(resid(m2) ~ predict(m2)))
 
 
 ```
