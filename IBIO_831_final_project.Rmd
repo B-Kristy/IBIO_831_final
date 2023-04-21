@@ -15,9 +15,13 @@ setwd("~/Documents/GitHub/IBIO_831_final/")
 ```
 
 ## How does microbial diversity influence ectoparasite load in painted turtles? 
-[Placeholder intro]
-[Experimental Design]
-[Hypotheses]
+
+Intro 
+
+Painted turtles (Chrysemys picta) are a common freshwater turtle species 
+in North America. As they inhabit rivers, lakes, and ponds they are often subject to aquatic 
+ectoparasites, such as leeches, which serve as vectors for more harmful blood parasites. Recently there has been an uptick in research investigating the microbiome of painted turtles, focusing largely on quantifying bacterial phyla present in the gut. However, little is known about how the microbial diversity in these organisms may influence fitness, or how they interact with stressors in their environment, such as ectoparasites. In this study, we survey three populations of painted turtles, quantifying ectoparasite load, fecal microbiota diversity, and body size for three hundred individuals in order to determine if gut microbial diversity mediates susceptibility to ectoparasites. We predicted that turtles with higher gut microbial diversity would be less susceptible to ectoparasite predation, and consequently would have fewer attached leeches. 
+
 
 ```{r DATA SIMULATION, include=FALSE}
 
