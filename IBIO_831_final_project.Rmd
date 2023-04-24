@@ -14,6 +14,8 @@ setwd("~/Documents/GitHub/IBIO_831_final")
 
 # Load Libraries
 library(bbmle)
+library(car)
+library(cowplot)
 library(truncnorm)
 library(tidyverse)
 
@@ -129,13 +131,26 @@ d %>%
   geom_abline(intercept = 0, slope = 0) + 
   ylab("Residuals") +
   xlab("Predicted Values") +
-  theme_classic()
+  theme_classic() -> p1
 
-qqnorm(residuals, pch = 19) 
-qqline(residuals, col = 'red')
+d %>%
+  ggplot(aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(col = "red") +
+  ylab("Sample Quantiles") +
+  xlab("Theoretical Quantiles") +
+  theme_classic() -> p2
+  
+ 
+
+ggdraw() +
+  draw_plot(p1, x = 0.0, y = 0.0, width = 0.5, height = 1) +
+  draw_plot(p2, x = 0.5, y= 0.0, width = 0.5, height =1) +
+  draw_plot_label(label = c("A", "B"), size = 15,
+                  x = c (0, 0.5), y = c(1, 1))
 ```
 \
-<div align="justify">We performed model evaluation using two methods, first by plotting the predicted model values against the residuals, and then generating a Q-Q plot. By plotting the predicted values against the residuals for model 5, we are able to see that the values are randomly scattered around zero without any clear outliers, indicating that model 5 is a good fit for the data. The Q-Q plot allows us to visualize the distribution of the residuals. Here our Q-Q plot shows that the residuals are normally distributed because the points fall along a straight line. Because the interactive model does a sufficient job explaining the variability in our response variable, we can now plot our model predictions over the raw dataset to identify significant trends worth evaluating:</div> 
+<div align="justify">We performed model evaluation using two methods, first by plotting the predicted model values against the residuals in panel A, and then generating a Q-Q plot in panel B. By plotting the predicted values against the residuals for model 5, we are able to see that the values are randomly scattered around zero without any clear outliers, indicating that model 5 is a good fit for the data. The Q-Q plot allows us to visualize the distribution of the residuals. Here our Q-Q plot shows that the residuals are normally distributed because the points fall along a straight line. Because the interactive model does a sufficient job explaining the variability in our response variable, we can now plot our model predictions over the raw dataset to identify significant trends worth evaluating:</div> 
 \
 
 ## Model Analysis
@@ -202,11 +217,40 @@ m5.pred.site3$lowerCI <- (m5.pred.site3$fit - 1.96*(m5.pred.site3$se.fit))
     geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$lowerCI, col = newdata.site3$site),linetype = "dashed", linewidth=1.5) +
     theme_classic() +
     ylab("Ectoparasite Load") +
-    xlab("Microbial Diversity (Scaled)")
-    
+    xlab("Microbial Diversity (Scaled)") -> p1
+
+# Plot Boxplot of ectoparasite load across the sites
+dat %>%
+  ggplot(aes(x=site, y = ecto.load, fill = site)) +
+  scale_fill_manual(values = c('#377A6F', '#D0943E', '#878D9E' )) +
+  geom_jitter(width = 0.1) +
+  geom_boxplot( alpha = 0.55) +
+  xlab("") +
+  ylab("Ectoparasite Load") +
+  guides(fill="none") +
+  theme_classic() -> p2
+
+# Plot Boxplot of microbial diversity across the sites
+dat %>%
+  ggplot(aes(x=site, y = microbe_div, fill = site)) +
+  scale_fill_manual(values = c('#377A6F', '#D0943E', '#878D9E' )) +
+  geom_jitter(width = 0.1) +
+  geom_boxplot( alpha = 0.55) +
+  xlab("") +
+  ylab("Microbial Diversity") +
+  guides(fill="none") +
+  theme_classic() -> p3
+
+## Arrange all plots
+ggdraw() +
+  draw_plot(p1, x = 0.0, y = 0.45, width = 1.0, height = 0.55) +
+  draw_plot(p2, x = 0.0, y= 0.0, width = 0.5, height =0.45) +
+  draw_plot(p3, x=0.5, y = 0.0, width = 0.5, height = 0.45) +
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c (0, 0,0.5 ), y = c(1, 0.45,0.45 ))
 ```
 \
-<div align="justify"> Here we visualized the raw data for the relationship between microbial diversity (scaled) and ectoparasite load. The model fit is displayed across each site; the 95% confidence intervals are presented as the dashed lines. We can visualize general trends in the data, evaluate model fit, and identify any outliers that may not be included in the model predictions. From this figure, we determined that model 5 continues to be the most appropriate model for our data as it fits the overall trend and variability of our data sufficiently. Ultimately, increasing microbial diversity negatively impacts Ectoparasite load across all sites.</div> 
+<div align="justify"> Here we visualized the raw data for the relationship between microbial diversity (scaled) and ectoparasite load in panel A. The model fit is displayed across each site; the 95% confidence intervals are presented as the dashed lines. We can visualize general trends in the data, evaluate model fit, and identify any outliers that may not be included in the model predictions. From this figure, we determined that model 5 continues to be the most appropriate model for our data as it fits the overall trend and variability of our data sufficiently. Ultimately, increasing microbial diversity negatively impacts Ectoparasite load across all sites. In addition, Ectoparasite load across each site is plotted in panel B. Average ectoparasite load is higher in Site 2 relative to Site 1 and Site 3. Site 3 is slightly lower than Site 1 -- these values are shown in the intercepts of panel A as well. Lastly, microbial diversity across each site is plotted in panel C. There is no significant difference in microbial diversity across each Site. </div> 
 
 ```{r PREPARE EFFECT SIZES, include=FALSE}
 ## R - squared value 
@@ -295,11 +339,23 @@ d %>%
   geom_abline(intercept = 0, slope = 0) + 
   ylab("Residuals") +
   xlab("Predicted Values") +
-  theme_classic()
+  theme_classic() -> p1
 
-qqnorm(residuals, pch = 19) 
-qqline(residuals, col = 'red')
+d %>%
+  ggplot(aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(col = "red") +
+  ylab("Sample Quantiles") +
+  xlab("Theoretical Quantiles") +
+  theme_classic() -> p2
+  
+ 
 
+ggdraw() +
+  draw_plot(p1, x = 0.0, y = 0.0, width = 0.5, height = 1) +
+  draw_plot(p2, x = 0.5, y= 0.0, width = 0.5, height =1) +
+  draw_plot_label(label = c("A", "B"), size = 15,
+                  x = c (0, 0.5), y = c(1, 1))
 ## MODEL ANALYSIS 
 
 ## SITE 1
@@ -362,8 +418,38 @@ m5.pred.site3$lowerCI <- (m5.pred.site3$fit - 1.96*(m5.pred.site3$se.fit))
     geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$lowerCI, col = newdata.site3$site),linetype = "dashed", linewidth=1.5) +
     theme_classic() +
     ylab("Ectoparasite Load") +
-    xlab("Microbial Diversity (Scaled)")
-    
+    xlab("Microbial Diversity (Scaled)") -> p1
+
+# Plot Boxplot of ectoparasite load across the sites
+dat %>%
+  ggplot(aes(x=site, y = ecto.load, fill = site)) +
+  scale_fill_manual(values = c('#377A6F', '#D0943E', '#878D9E' )) +
+  geom_jitter(width = 0.1) +
+  geom_boxplot( alpha = 0.55) +
+  xlab("Site") +
+  ylab("Ectoparasite Load") +
+  theme_classic() -> p2
+
+# Plot Boxplot of microbial diversity across the sites
+dat %>%
+  ggplot(aes(x=site, y = microbe_div, fill = site)) +
+  scale_fill_manual(values = c('#377A6F', '#D0943E', '#878D9E' )) +
+  geom_jitter(width = 0.1) +
+  geom_boxplot( alpha = 0.55) +
+  xlab("Site") +
+  ylab("Microbial Diversity") +
+  theme_classic() -> p3
+
+## Arrange all plots
+## Arrange all plots
+ggdraw() +
+  draw_plot(p1, x = 0.0, y = 0.45, width = 1.0, height = 0.55) +
+  draw_plot(p2, x = 0.0, y= 0.0, width = 0.5, height =0.45) +
+  draw_plot(p3, x=0.5, y = 0.0, width = 0.5, height = 0.45) +
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c (0, 0,0.5 ), y = c(1, 0.45,0.45 ))
+
+
 ## Effect of microbial diversity on ectoparasite load on across ALL sites
 summary(m5) # -1.5468 is the effect (slope) between microbial diversity and ectoparasite load
 confint(m5, level = 0.95)
