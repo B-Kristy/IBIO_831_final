@@ -97,7 +97,7 @@ m5 <- lm(ecto.load ~ microbe_div.scaled * site, data = dat)
 ```
 
 \
-To compare the models, ...
+To compare the models we used AIC model comparison. This allows us to select the best-fitting model based on AIC values. 
 ```{r MODEL COMPARISON, echo=FALSE}
 # AIC MODEL COMPARISON
 tab = AICctab(m1, m2, m3, m4, m5, base=TRUE, delta=TRUE, weights=TRUE, logLik=TRUE)
@@ -108,7 +108,7 @@ tab
 ```
 
 \
-According to the AIC model comparison, m5 is the... \
+According to the AIC model comparison, m5 is the best-fitting model, with the lowest AIC value compared to the other models. For this reason, we decide to move forward with using model 5, the interactive model, in our model evaluation.   
 
 ```{r MODEL EVALUATION, echo=FALSE}
 # plot residuals of best-fit model here:
@@ -127,7 +127,7 @@ d %>%
 qqnorm(residuals, pch = 19) 
 qqline(residuals, col = 'red')
 ```
-[Paragraph to discuss model testing and best-fit model]
+[Paragraph to discuss model testing and best-fit model] We performed model evaluation using two methods, first by plotting the predicted model values against the residuals, and then generating a Q-Q plot. By plotting the predicted values against the residuals for model 5, we are able to see that the values are randomly scattered around zero without any clear outliers, indicating that model 5 is a good fit for the data. The Q-Q plot allows us to visualize the distribution of the residuals. Here our Q-Q plot shows that the residuals are normally distributed because the points fall along a straight line.
 
 ```{r RESULTS - RAW DATA WITH MODEL PREDICTIONS, echo=FALSE}
 
@@ -196,6 +196,7 @@ m5.pred.site3$lowerCI <- (m5.pred.site3$fit - 1.96*(m5.pred.site3$se.fit))
 
 
 ```
+[Paragraph to discuss visualizing model fit using raw data and model predictions] Here we visualized the raw data for the relationship between microbial diversity (scaled) and ectoparasite load. By doing this we are able to visualize how well our selected model fits the data and identify any outliers that may not be included in the model predictions. From our figure we determined that model 5 continues to be the most appropriate model for our data as it fits the overall trend and variability of our data sufficiently. 
 
 ```{r PREPARE EFFECT SIZES, include=FALSE}
 ## R - squared value 
@@ -221,4 +222,4 @@ confint(m5, level = 0.95)
 
 ```
 \
-The interactive model explained 82.97% of the variability in our response variable: Ectoparasite load. Across all three sites, there is a significant, negative effect of microbial diversity on ectoparasite load (p < 0.01). Across all three sites, a 1-unit change in microbial diversity decreases ectoparasite load by 54.68% (95% CI: 25.77 % - 83.59%). Ectoparasite load was variable across all three sites. When microbial diversity is zero, Site 2's ectoparasite load was []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Further, Site 3's ectoparasite load was []% higher than  Site 2's parasite load (95% CI: []% - []%) and []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Both site and microbial diversity interacted to influence ectoparasite load (p < 0.01). Specifically, a 1-unit change in microbial diversity decreases ectoparasite load in site 1 by []% (95% CI: ), []% in site 2 (95% CI: ), and []% in site 3 (95% CI: ). Interestingly, at mean microbial diversity, Site 2's ectoparasite load was [] times lower than Site 1's ectoparasite load (95% CI: ) and [] times lower than Site 3's ectoparasite load (95% CI: ). It is possible that site-specific influences on food availability and prey diversity mediates differences in the red painted turtle's fecal microbiome, functionally impacting ectoparasite load and host-health. 
+Here we evaluated effect sizes for model five. Doing this allows us to compare the relative strength of relationships between predictor and response variables, in this case, microbial diversity (scaled) across and between sites. The interactive model explained 82.97% of the variability in our response variable: Ectoparasite load. Across all three sites, there is a significant, negative effect of microbial diversity on ectoparasite load (p < 0.01). Across all three sites, a 1-unit change in microbial diversity decreases ectoparasite load by 54.68% (95% CI: 25.77 % - 83.59%). Ectoparasite load was variable across all three sites. When microbial diversity is zero, Site 2's ectoparasite load was []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Further, Site 3's ectoparasite load was []% higher than  Site 2's parasite load (95% CI: []% - []%) and []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Both site and microbial diversity interacted to influence ectoparasite load (p < 0.01). Specifically, a 1-unit change in microbial diversity decreases ectoparasite load in site 1 by []% (95% CI: ), []% in site 2 (95% CI: ), and []% in site 3 (95% CI: ). Interestingly, at mean microbial diversity, Site 2's ectoparasite load was [] times lower than Site 1's ectoparasite load (95% CI: ) and [] times lower than Site 3's ectoparasite load (95% CI: ). It is possible that site-specific influences on food availability and prey diversity mediates differences in the red painted turtle's fecal microbiome, functionally impacting ectoparasite load and host-health. 
