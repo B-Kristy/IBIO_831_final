@@ -1,10 +1,9 @@
 ---
-title: 'IBIO 831: Final Project'
+title: 'Does site location and skin microbial diversity impact ectoparasite load in painted turtles?'
 output:
   html_document: default
-  pdf_document: default
   word_document: default
-date: "2023-04-20"
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,13 +20,16 @@ library(tidyverse)
 
 ```
 
-## Does site location and microbial diversity impact ectoparasite load in painted turtles? 
-Morgan Clark and Brandon Kristy 
+### Morgan Clark and Brandon Kristy 
 
 ## Introduction
-<div align="justify"> Painted turtles (Chrysemys picta) are a common freshwater turtle species 
+The following scenario represents our hypothetical experimental design and hypothesis-testing for our simulated dataset: 
+\
+<div align="justify"> Painted turtles (*Chrysemys picta*) are a common freshwater turtle species 
 in North America. As they inhabit rivers, lakes, and ponds they are often subject to aquatic 
-ectoparasites, such as leeches, which serve as vectors for more harmful blood parasites. Recently there has been an uptick in research investigating the microbiome of painted turtles, focusing largely on quantifying bacterial phyla present in the gut. However, little is known about how the microbial diversity in these organisms may influence fitness, or how they interact with stressors in their environment, such as ectoparasites. In this study, we survey three populations of painted turtles, quantifying ectoparasite load and fecal microbiota diversity across each population to determine if gut microbial diversity mediates susceptibility to ectoparasites. To evaluate fecal microbiota diversity, we extracted DNA from fecal samples from 100 turtles in each of the selected populations, resulting in 300 total samples. We sequenced DNA on the Illumina Miseq platform. In short, filtered sequences with a high degree of similarity (97%) were clustered into Operational Taxonomic Units (OTUs). In this study, we define microbial diversity as the number of OTUs within each sample, which is a proxy for species richness. Because food availability and prey diversity varies across each of the selected populations, we predict that gut microbial diversity may vary across each site. Further, we predict that turtles with higher gut microbial diversity would be less susceptible to ectoparasite predation, and consequently would have fewer attached leeches.</div> \
+ectoparasites, such as leeches, which negatively impact host health by absorbing nutrients and serve as vectors for more harmful blood parasites. Recently there has been an uptick in research investigating the microbiome of painted turtles, focusing largely on quantifying bacterial diversity and function in the gut. However, little work has been done to quantify and survey the microbial community dwelling on the turtle's shell, or how this microbial community interacts with stressors in their environment, such as ectoparasites. The skin is the turtle's primary barrier against the outside world; it is possible that microbes living on, in, and around the turtle's skin tissue may functionally impact host fitness. In this study, we survey three populations of painted turtles, quantifying ectoparasite load and shell-microbiota diversity across each population. Because endophytic microbial communities functionally impact host health, we predict that turtles with higher microbial diversity may be less susceptible to ectoparasite predation, and consequently have fewer attached leeches. Further, because food availability, prey diversity, and environmental stressors vary across each of the locally adapated populations, we predict ectoparasite load will vary across each site. </div> 
+<div align = "justify"> We used a standardized sampling protocol across three sites - each with locally adapted red-painted turtle populations. Over the course of the summer season, we used sardine-baited cathedral traps to mark and capture 100 turtle individuals across three sites. We transported turtles individually back to Kellogg Biological Station (KBS) in damp cloth bags to keep the leeches from desiccating. To quantify ectoparasite load, we counted leeches on the shell, anterior body, and posterior body, normalizing ectoparasite counts by total body area. </div> 
+<div align = "justify"> To evaluate turtle shell microbial diversity, we collected skin swabs in three regions of the shell: the carapace, the plastron, and the bridge. We collected an additional skin swab on the scales around the head, neck, and appendages. For each turtle, these swabs were pooled together; we extracted DNA from these swab samples from 100 turtles in each of the selected populations, resulting in 300 total samples. To profile the bacterial community, we performed a 2-step PCR reaction of the 16S rRNA gene marker with the 515F-806R primer set. We sequenced clean PCR products on the Illumina Miseq platform. In short, filtered sequences with a high degree of similarity (97%) were clustered into Operational Taxonomic Units (OTUs). In this study, we define microbial diversity as the number of OTUs within each sample, which is a proxy for within-sample species richness: alpha diversity. We returned all turtles back to their capture locations within 24 hours of their initial capture! </div> 
 
 Before generating the models, we first inspect the distribution of our response variable: ectoparasite load.
 
@@ -75,13 +77,13 @@ dat <- data.frame(turtle_id, ecto.load, site, microbe_div, microbe_div.scaled)
 ```{r histogram, echo=FALSE}
 dat %>%
   ggplot(aes(x=ecto.load)) +
-  geom_histogram(binwidth=1, fill = "brown", color = "black") +
+  geom_histogram(binwidth=0.75, fill = "#BCAD98", color = "black") +
   theme_classic() +
   ylab("") +
   xlab("Ectoparasite Load")
 ```
 \
-The response variable, ectoparasite load, appears to be normally distributed, so we will generate our models usin g the lm() function. Below, we create 5 models for model comparison.
+The response variable, ectoparasite load, appears to be normally distributed, so we will generate our models using the lm() function. Below, we create 5 models for model comparison.
 
 ## Model Comparison
 
@@ -114,7 +116,7 @@ tab
 ```
 
 \
-<div align="justify"> According to the AIC model comparison, m5 is the best-fitting model, with the lowest AIC value compared to the other models. For this reason, we decide to move forward with using model 5, the interactive model, in our model evaluation.We performed model testing by plotting the residuals of model 5 with its predicted values. In addition, we also created a Normal Q-Q plot. The summary of the interactive model, the residuals plot, and the Q-Q plot are now shown below:</div>
+<div align="justify"> According to the AIC model comparison, m5 is the best-fitting model, explaining nearly 100% of the weight and the lowest AIC value compared to the other models. The difference in the log likelihood between m5 and m4, the additive model, was 212.5. Because of this, we we will move forward with the analysis with model 5, the interactive model, in our model evaluation. We performed model testing by plotting the residuals of model 5 with its predicted values. In addition, we also created a Normal Q-Q plot. The summary of the interactive model, the residuals plot, and the Q-Q plot are now shown below:</div>
 
 ## Model Evaluation
 
@@ -207,14 +209,14 @@ m5.pred.site3$lowerCI <- (m5.pred.site3$fit - 1.96*(m5.pred.site3$se.fit))
     geom_point(data =dat, aes(x = microbe_div.scaled, y = ecto.load, col = site), alpha = 0.55, size = 2.5) +
     geom_line(aes(x = newdata.site1$microbe_div.scaled, y = m5.pred.site1$fit, col = newdata.site1$site), linewidth=1.25) +
     scale_color_manual(values = c('#377A6F', '#D0943E', '#878D9E' )) +
-    geom_line(aes(x = newdata.site1$microbe_div.scaled, y = m5.pred.site1$upperCI, col = newdata.site1$site),linetype = "dashed", linewidth=1.5) +
-    geom_line(aes(x = newdata.site1$microbe_div.scaled, y = m5.pred.site1$lowerCI, col = newdata.site1$site),linetype = "dashed", linewidth=1.5) +
+    geom_line(aes(x = newdata.site1$microbe_div.scaled, y = m5.pred.site1$upperCI, col = newdata.site1$site),linetype = "dashed", linewidth=1) +
+    geom_line(aes(x = newdata.site1$microbe_div.scaled, y = m5.pred.site1$lowerCI, col = newdata.site1$site),linetype = "dashed", linewidth=1) +
     geom_line(aes(x = newdata.site2$microbe_div.scaled, y = m5.pred.site2$fit, col = newdata.site2$site), linewidth = 1.25) +
-    geom_line(aes(x = newdata.site2$microbe_div.scaled, y = m5.pred.site2$upperCI, col = newdata.site2$site),linetype = "dashed", linewidth=1.5) +
-    geom_line(aes(x = newdata.site2$microbe_div.scaled, y = m5.pred.site2$lowerCI, col = newdata.site2$site),linetype = "dashed", linewidth=1.5) +
+    geom_line(aes(x = newdata.site2$microbe_div.scaled, y = m5.pred.site2$upperCI, col = newdata.site2$site),linetype = "dashed", linewidth=1) +
+    geom_line(aes(x = newdata.site2$microbe_div.scaled, y = m5.pred.site2$lowerCI, col = newdata.site2$site),linetype = "dashed", linewidth=1) +
     geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$fit, col = newdata.site3$site), linewidth = 1.25) +
-    geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$upperCI, col = newdata.site3$site),linetype = "dashed", linewidth=1.5) +
-    geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$lowerCI, col = newdata.site3$site),linetype = "dashed", linewidth=1.5) +
+    geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$upperCI, col = newdata.site3$site),linetype = "dashed", linewidth=1) +
+    geom_line(aes(x = newdata.site3$microbe_div.scaled, y = m5.pred.site3$lowerCI, col = newdata.site3$site),linetype = "dashed", linewidth=1) +
     theme_classic() +
     ylab("Ectoparasite Load") +
     xlab("Microbial Diversity (Scaled)") -> p1
@@ -250,36 +252,49 @@ ggdraw() +
                   x = c (0, 0,0.5 ), y = c(1, 0.45,0.45 ))
 ```
 \
-<div align="justify"> Here we visualized the raw data for the relationship between microbial diversity (scaled) and ectoparasite load in panel A. The model fit is displayed across each site; the 95% confidence intervals are presented as the dashed lines. We can visualize general trends in the data, evaluate model fit, and identify any outliers that may not be included in the model predictions. From this figure, we determined that model 5 continues to be the most appropriate model for our data as it fits the overall trend and variability of our data sufficiently. Ultimately, increasing microbial diversity negatively impacts Ectoparasite load across all sites. In addition, Ectoparasite load across each site is plotted in panel B. Average ectoparasite load is higher in Site 2 relative to Site 1 and Site 3. Site 3 is slightly lower than Site 1 -- these values are shown in the intercepts of panel A as well. Lastly, microbial diversity across each site is plotted in panel C. There is no significant difference in microbial diversity across each Site. </div> 
+<div align="justify"> Here we visualized the raw data for the relationship between microbial diversity (scaled) and ectoparasite load in panel A. The model fit is displayed across each site; the 95% confidence intervals are presented as the dashed lines. We can visualize general trends in the data, evaluate model fit, and identify any outliers that may not be included in the model predictions. From this figure, we determined that model 5 continues to be the most appropriate model for our data as it fits the overall trend and variability of our data sufficiently. Ultimately, increasing microbial diversity negatively impacts Ectoparasite load across all sites. In addition, Ectoparasite load across each site is plotted in panel B. Lastly, microbial diversity across each site is plotted in panel C. There is no significant difference in microbial diversity across each site. </div> 
 
 ```{r PREPARE EFFECT SIZES, include=FALSE}
 ## R - squared value 
-
+# 0.7576
 ## Effect of microbial diversity on ectoparasite load on across ALL sites
 summary(m5) # -1.5468 is the effect (slope) between microbial diversity and ectoparasite load
 confint(m5, level = 0.95)
 
-## Effect of site on ectoparasite load
-## LOWER CI
-3.97 + 1.98
-3.97 + 5.95 # 9.92
-3.97 / 9.92 # 40%
-5.95 / 9.92 # 59.97%
+## Means parameterization
+m5.means <- lm(ecto.load ~ microbe_div.scaled * site - 1, data = dat)
+summary(m5.means)
+confint(m5.means, level = 0.95)
 
-4.55 + 2.80 # 7.35
-4.55 + 7.35 # 11.9
-4.55 / 11.9 # 38%
-7.35 / 11.9 # 61%
-## Interaction between microbial diversity and site on Ectoparasite load
+# How many times greater is Site 2's ectoparasite load relative to Site 1's?
+6.7042 / 4.2618 #1.57 effect
+6.4065 / 3.9645 # 1.61 upper CI
+7.0019022 / 4.5590521 # 1.535 lower CI
 
+# How many times greater is Site 2's ectoparasite load relative to Site 3's?
+6.7042/3.1715 # 2.11 effect
+6.4065 / 2.8739 # 2.23 upper CI
+7.0019022 / 3.4690 # 2.018 lower CI
 
+# How much lower is Site 3's ectoparasite load relatie to Site 1's?
+4.2618 / 3.1715 # 1.343 effect
+3.9645 / 2.8739 # 1.38 upper CI
+4.5590521 / 3.4690495 # 1.314 lower CI
 
+# Microbial diversity effect on ectoparasite load (using m2)
+m2.means <- lm(ecto.load ~ microbe_div.scaled - 1, data =dat)
+summary(m2.means)
+confint(m2.means)
+
+# Interactive effects
+summary(m5.means)
 ```
-\
-<div align="justify"> Evaluating the effect sizes from the terms in model five allows us to compare the relative strength of relationships between predictor and response variables. In this case, this will include microbial diversity (scaled) across and between sites. The interactive model explained 82.97% of the variability in our response variable: Ectoparasite load (R-squared = 0.8297). Across all three sites, there is a significant, negative effect of microbial diversity on ectoparasite load (p < 0.01). Across all three sites, a 1-unit change in microbial diversity decreases ectoparasite load by 54.68% (95% CI: 25.77 % - 83.59%). Ectoparasite load was variable across all three sites. When microbial diversity is zero, Site 2's ectoparasite load was []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Further, Site 3's ectoparasite load was []% higher than  Site 2's parasite load (95% CI: []% - []%) and []% higher than Site 1's ectoparasite load (95% CI: []% - []%). Both site and microbial diversity interacted to influence ectoparasite load (p < 0.01). Specifically, a 1-unit change in microbial diversity decreases ectoparasite load in site 1 by []% (95% CI: ), []% in site 2 (95% CI: ), and []% in site 3 (95% CI: ). Interestingly, at mean microbial diversity, Site 2's ectoparasite load was [] times lower than Site 1's ectoparasite load (95% CI: ) and [] times lower than Site 3's ectoparasite load (95% CI: ). It is possible that site-specific influences on food availability and prey diversity mediates differences in the red painted turtle's fecal microbiome, functionally impacting ectoparasite load and host-health. </div>
+
+<div align="justify"> Evaluating the effect sizes from the terms in model five allows us to compare the relative strength of relationships between predictor and response variables. In this case, this will include microbial diversity (scaled) across and between sites. The interactive model explained 75.76% of the variability in our response variable: Ectoparasite load (R-squared = 0.7576). Across all three sites, there is a significant, negative effect of microbial diversity on ectoparasite load (p < 0.01). A 1-unit change in microbial diversity decreases ectoparasite load by up to 101% (95% CI: 41 % - 160%). Ectoparasite load was variable across all three sites. When microbial diversity is zero, Site 2's mean ectoparasite load was 1.57 times higher than Site 1's ectoparasite load (95% CI: 1.53 - 1.61) and 2.11 times higher than Site 3's ectoparasite load (95% CI: 2.02 - 2.23). Further, Site 3's ectoparasite load was 1.34 times lower than Site 1's ectoparasite load (95% CI: 1.31 - 1.38) when microbial diversity is zero.  In addition to their individual effects on ectoparasite load, both site and microbial diversity interacted to influence ectoparasite load (p < 0.01). Specifically, a 1-unit change in microbial diversity decreases ectoparasite load by 54.53% (95% CI: 25.10% - 83.94% ) in site 1 and 95% in site 2 (95% CI: 52% - 134%). Interestingly, there was no significant relationship between ectoparasite load and microbial diversity in site 3 (95% CI: -28% - 54%; p = 0.529). </div>
+<div align="justify"> Overall, our results identify a potential relationship between skin microbial diversity and site on ectoparasite load for painted turtles. It is likely that site-specific influences on food availability, prey diversity, and environmental stressors results in variable ectoparasite load. These site-specific differences may result in variable skin microbial community composition. Overall, additional work is needed to evaluate site-specific impacts on microbial community composition and functional diversity within the turtle's skin microbiome. This work furthers our understanding of how host-associated microbial communities across locally adapted populations play a role on turtle host fitness and health. </div>
 
 \
-The code used to simulate the data, perform model comparison, perform model evaluation, and perform model analysis are shown below: \
+The code used to simulate the data, compare models, evaluate the best-fit model, and analyze the best-fit model are shown below: \
 ```{r eval=FALSE, include=TRUE}
 ## MODEL SIMULATION
 set.seed(123)
@@ -449,24 +464,40 @@ ggdraw() +
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c (0, 0,0.5 ), y = c(1, 0.45,0.45 ))
 
-
+# Effect size analysis
+## R - squared value 
+# 0.7576
 ## Effect of microbial diversity on ectoparasite load on across ALL sites
 summary(m5) # -1.5468 is the effect (slope) between microbial diversity and ectoparasite load
 confint(m5, level = 0.95)
 
-## Effect of site on ectoparasite load
-## LOWER CI
-3.97 + 1.98
-3.97 + 5.95 # 9.92
-3.97 / 9.92 # 40%
-5.95 / 9.92 # 59.97%
+## Means parameterization
+m5.means <- lm(ecto.load ~ microbe_div.scaled * site - 1, data = dat)
+summary(m5.means)
+confint(m5.means, level = 0.95)
 
-4.55 + 2.80 # 7.35
-4.55 + 7.35 # 11.9
-4.55 / 11.9 # 38%
-7.35 / 11.9 # 61%
-## Interaction between microbial diversity and site on Ectoparasite load
+# How many times greater is Site 2's ectoparasite load relative to Site 1's?
+6.7042 / 4.2618 #1.57 effect
+6.4065 / 3.9645 # 1.61 upper CI
+7.0019022 / 4.5590521 # 1.535 lower CI
 
+# How many times greater is Site 2's ectoparasite load relative to Site 3's?
+6.7042/3.1715 # 2.11 effect
+6.4065 / 2.8739 # 2.23 upper CI
+7.0019022 / 3.4690 # 2.018 lower CI
+
+# How much lower is Site 3's ectoparasite load relatie to Site 1's?
+4.2618 / 3.1715 # 1.343 effect
+3.9645 / 2.8739 # 1.38 upper CI
+4.5590521 / 3.4690495 # 1.314 lower CI
+
+# Microbial diversity effect on ectoparasite load (using m2)
+m2.means <- lm(ecto.load ~ microbe_div.scaled - 1, data =dat)
+summary(m2.means)
+confint(m2.means)
+
+# Interactive effects
+summary(m5.means)
 
   
 ```
